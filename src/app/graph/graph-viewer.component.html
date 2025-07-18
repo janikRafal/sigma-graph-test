@@ -1,0 +1,71 @@
+<div class="layout-container">
+  <div class="sidebar">
+    <h3 class="sidebar-title">Graph Options</h3>
+
+    <div class="option-group">
+      <label class="option-label">Dataset:</label>
+      <div class="dataset-buttons">
+        <button
+          *ngFor="let dataset of datasets; let i = index"
+          (click)="switchDataset(i)"
+          [class.active]="currentDatasetIndex === i"
+          class="dataset-btn"
+        >
+          {{ dataset.name }}
+        </button>
+      </div>
+    </div>
+
+    <div class="option-group">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="enhancedHoverEnabled"
+          (change)="onHoverModeChange()"
+          class="checkbox-input"
+        />
+        <span class="checkbox-text">Enhanced Hover Effects</span>
+      </label>
+    </div>
+
+    <div class="option-group">
+      <button (click)="resetGraphPosition()" class="reset-btn">
+        Center Graph
+      </button>
+    </div>
+
+    <div class="option-group">
+      <button (click)="resetGraphLayout()" class="reset-layout-btn">
+        Reset Graph
+      </button>
+    </div>
+  </div>
+
+  <div class="graph-area">
+    <div #container class="graph-container"></div>
+
+    <div
+      *ngIf="contextMenu.visible"
+      class="context-menu"
+      [style.left.px]="contextMenu.x"
+      [style.top.px]="contextMenu.y"
+    >
+      <div
+        *ngIf="!isNodeExpanded(contextMenu.nodeId!)"
+        class="context-menu-item"
+        (click)="expandNode(contextMenu.nodeId!)"
+      >
+        <span class="menu-icon">📂</span>
+        Expand ({{ getExpandableChildrenCount(contextMenu.nodeId!) }} nodes)
+      </div>
+      <div
+        *ngIf="isNodeExpanded(contextMenu.nodeId!)"
+        class="context-menu-item"
+        (click)="collapseNode(contextMenu.nodeId!)"
+      >
+        <span class="menu-icon">📁</span>
+        Collapse nodes
+      </div>
+    </div>
+  </div>
+</div>
