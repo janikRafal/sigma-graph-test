@@ -5,14 +5,15 @@
     <div class="option-group">
       <label class="option-label">Dataset:</label>
       <div class="dataset-buttons">
+        @for (dataset of datasets; track dataset.name; let i = $index) {
         <button
-          *ngFor="let dataset of datasets; let i = index"
           (click)="switchDataset(i)"
           [class.active]="currentDatasetIndex === i"
           class="dataset-btn"
         >
           {{ dataset.name }}
         </button>
+        }
       </div>
     </div>
 
@@ -44,28 +45,109 @@
   <div class="graph-area">
     <div #container class="graph-container"></div>
 
+    @if (contextMenu.visible) {
     <div
-      *ngIf="contextMenu.visible"
       class="context-menu"
       [style.left.px]="contextMenu.x"
       [style.top.px]="contextMenu.y"
     >
-      <div
-        *ngIf="!isNodeExpanded(contextMenu.nodeId!)"
-        class="context-menu-item"
-        (click)="expandNode(contextMenu.nodeId!)"
-      >
-        <span class="menu-icon">📂</span>
+      @if (!showRelationDeletePanel && !showRelationCreatePanel) { @if
+      (!isNodeExpanded(contextMenu.nodeId!)) {
+      <div class="context-menu-item" (click)="expandNode(contextMenu.nodeId!)">
         Expand ({{ getExpandableChildrenCount(contextMenu.nodeId!) }} nodes)
       </div>
+      } @if (isNodeExpanded(contextMenu.nodeId!)) {
       <div
-        *ngIf="isNodeExpanded(contextMenu.nodeId!)"
         class="context-menu-item"
         (click)="collapseNode(contextMenu.nodeId!)"
       >
-        <span class="menu-icon">📁</span>
         Collapse nodes
       </div>
+      } @if (!relationDraftSource) {
+      <div class="context-menu-item" (click)="startRelationFromContextMenu()">
+        Start relation from here
+      </div>
+      } @if (relationDraftSource && contextMenu.nodeId && relationDraftSource
+      !== contextMenu.nodeId) {
+      <div class="context-menu-item" (click)="connectRelationToContextMenu()">
+        Connect relation to this node…
+      </div>
+      } @if (relationDraftSource) {
+      <div class="context-menu-item" (click)="cancelRelationDraft()">
+        Cancel relation
+      </div>
+      } @if (contextMenuEdges.length) {
+      <div class="context-menu-item" (click)="openRelationDeletePanel()">
+        Delete relation…
+      </div>
+      } @if (contextMenu.nodeId) {
+      <div
+        class="context-menu-item danger"
+        (click)="deleteNodeKeepChildrenFromContextMenu()"
+      >
+        Delete node (keep children)
+      </div>
+      } @if (contextMenu.nodeId) {
+      <div
+        class="context-menu-item danger"
+        (click)="deleteNodeFromContextMenu()"
+      >
+        Delete node (with children)
+      </div>
+      } } @else if (showRelationCreatePanel) {
+      <div class="context-menu-section-title">Create relation</div>
+      <div class="context-menu-form">
+        <input
+          [(ngModel)]="relationLabelInput"
+          class="context-menu-select"
+          type="text"
+          placeholder="Relation label"
+          (keyup.enter)="confirmCreateRelation()"
+        />
+      </div>
+      <div class="context-menu-actions">
+        <button
+          type="button"
+          class="context-menu-btn"
+          (click)="cancelRelationCreate()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="context-menu-btn"
+          (click)="confirmCreateRelation()"
+        >
+          Create
+        </button>
+      </div>
+      } @else {
+      <div class="context-menu-section-title">Choose relation to delete</div>
+      <div class="context-menu-form">
+        <select [(ngModel)]="selectedEdgeId" class="context-menu-select">
+          @for (e of contextMenuEdges; track e.id) {
+          <option [value]="e.id">{{ e.text }}</option>
+          }
+        </select>
+      </div>
+      <div class="context-menu-actions">
+        <button
+          type="button"
+          class="context-menu-btn"
+          (click)="cancelRelationDelete()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="context-menu-btn danger"
+          (click)="deleteSelectedRelation()"
+        >
+          Delete
+        </button>
+      </div>
+      }
     </div>
+    }
   </div>
 </div>
