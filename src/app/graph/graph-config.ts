@@ -15,10 +15,15 @@ export const GRAPH_CONFIG = {
   layout: {
     iterations: 300,
     settings: {
-      gravity: 0.3,
-      scalingRatio: 20,
+      gravity: 0.1,
+      scalingRatio: 1000,
       strongGravityMode: false,
-      slowDown: 1,
+      slowDown: 5,
+      adjustSizes: true,
+      barnesHutOptimize: true,
+      barnesHutTheta: 0.5,
+      linLogMode: false,
+      outboundAttractionDistribution: false,
     },
   },
 
